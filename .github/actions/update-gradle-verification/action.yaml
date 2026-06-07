@@ -15,7 +15,7 @@ runs:
   steps:
     - name: Download previous verification files
       if: ${{ inputs.previous-artifact != '' }}
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: ${{ inputs.previous-artifact }}
         path: build/previous-verification
@@ -81,7 +81,7 @@ runs:
         cp gradle/verification-keyring.keys build/dependency-verification/gradle/
 
     - name: Upload verification files
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.output-artifact }}
         path: build/dependency-verification
