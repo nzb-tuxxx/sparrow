@@ -111,7 +111,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           BRANCH_NAME: automation/update-gradle-verification-metadata
         run: |
-          if git diff --quiet -- gradle/verification-metadata.xml gradle/verification-keyring.keys; then
+          if [ -z "$(git status --porcelain -- gradle/verification-metadata.xml gradle/verification-keyring.keys)" ]; then
             echo "No dependency verification changes detected."
             exit 0
           fi
