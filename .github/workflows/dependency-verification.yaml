@@ -103,14 +103,15 @@ jobs:
           name: gradle-verification-final
           path: build/final-verification
 
-      - name: Restore final verification files
-        run: cp build/final-verification/gradle/verification-* gradle/
-
       - name: Create or update pull request
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH_NAME: automation/update-gradle-verification-metadata
         run: |
+          mkdir -p /tmp/dependency-verification/gradle
+          cp build/final-verification/gradle/verification-* /tmp/dependency-verification/gradle/
+          cp /tmp/dependency-verification/gradle/verification-* gradle/
+
           if [ -z "$(git status --porcelain -- gradle/verification-metadata.xml gradle/verification-keyring.keys)" ]; then
             echo "No dependency verification changes detected."
             exit 0
@@ -118,8 +119,19 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin "$BRANCH_NAME" || true
-          git checkout -B "$BRANCH_NAME"
+          if git fetch origin "$BRANCH_NAME"; then
+            git restore gradle/verification-metadata.xml gradle/verification-keyring.keys
+            git checkout -B "$BRANCH_NAME" "origin/$BRANCH_NAME"
+            cp /tmp/dependency-verification/gradle/verification-* gradle/
+
+            if [ -z "$(git status --porcelain -- gradle/verification-metadata.xml gradle/verification-keyring.keys)" ]; then
+              echo "Existing automation branch already contains these verification changes."
+              exit 0
+            fi
+          else
+            git checkout -B "$BRANCH_NAME"
+          fi
+
           git add gradle/verification-metadata.xml gradle/verification-keyring.keys
           git commit -m "Update Gradle dependency verification metadata"
           git push --force-with-lease origin "HEAD:$BRANCH_NAME"
