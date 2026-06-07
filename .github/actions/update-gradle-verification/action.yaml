@@ -9,6 +9,10 @@ inputs:
     description: Optional previous verification artifact to restore before running Gradle.
     required: false
     default: ''
+  clean-start:
+    description: Remove existing verification files before bootstrapping metadata.
+    required: false
+    default: 'false'
 
 runs:
   using: composite
@@ -29,6 +33,9 @@ runs:
       shell: bash
       run: |
         mkdir -p gradle
+        if [ "${{ inputs.clean-start }}" = "true" ]; then
+          rm -f gradle/verification-metadata.xml gradle/verification-keyring.keys
+        fi
         if [ ! -f gradle/verification-metadata.xml ]; then
           {
             printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>'

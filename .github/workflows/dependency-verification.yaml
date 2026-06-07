@@ -11,6 +11,7 @@ permissions:
 
 env:
   ALLOW_ADDITIONAL_ARTIFACT_CHECKSUMS: 'false'
+  CLEAN_STALE_VERIFICATION_METADATA: 'false'
 
 concurrency:
   group: dependency-verification-${{ github.ref }}
@@ -28,6 +29,7 @@ jobs:
 
       - uses: ./.github/actions/update-gradle-verification
         with:
+          clean-start: ${{ env.CLEAN_STALE_VERIFICATION_METADATA }}
           output-artifact: gradle-verification-linux-x64
 
   linux-arm64:
