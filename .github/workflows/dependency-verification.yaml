@@ -6,8 +6,7 @@ on:
     - cron: '17 3 * * *'
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 env:
   ALLOW_ADDITIONAL_ARTIFACT_CHECKSUMS: 'false'
@@ -96,6 +95,9 @@ jobs:
     name: Open update PR
     runs-on: ubuntu-22.04
     needs: macos-arm64
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v6
