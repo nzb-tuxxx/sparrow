@@ -9,6 +9,9 @@ permissions:
   contents: write
   pull-requests: write
 
+env:
+  ALLOW_ADDITIONAL_ARTIFACT_CHECKSUMS: 'false'
+
 concurrency:
   group: dependency-verification-${{ github.ref }}
   cancel-in-progress: false
@@ -116,6 +119,12 @@ jobs:
             echo "No dependency verification changes detected."
             exit 0
           fi
+          if [ "$ALLOW_ADDITIONAL_ARTIFACT_CHECKSUMS" != "true" ] && git diff -- gradle/verification-metadata.xml | grep -q '^[+] *<also-trust '; then
+            echo "Generated verification metadata adds also-trust checksums."
+            echo "This indicates an existing artifact coordinate resolved to a checksum not currently trusted by the repository."
+            echo "Set ALLOW_ADDITIONAL_ARTIFACT_CHECKSUMS to 'true' to allow opening an automated metadata update PR for this case."
+            exit 1
+          fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -127,6 +136,12 @@ jobs:
             if [ -z "$(git status --porcelain -- gradle/verification-metadata.xml gradle/verification-keyring.keys)" ]; then
               echo "Existing automation branch already contains these verification changes."
               exit 0
+            fi
+            if [ "$ALLOW_ADDITIONAL_ARTIFACT_CHECKSUMS" != "true" ] && git diff -- gradle/verification-metadata.xml | grep -q '^[+] *<also-trust '; then
+              echo "Generated verification metadata adds also-trust checksums."
+              echo "This indicates an existing artifact coordinate resolved to a checksum not currently trusted by the automation branch."
+              echo "Set ALLOW_ADDITIONAL_ARTIFACT_CHECKSUMS to 'true' to allow updating the automated metadata PR for this case."
+              exit 1
             fi
           else
             git checkout -B "$BRANCH_NAME"
