@@ -98,7 +98,7 @@ jobs:
           submodules: recursive
 
       - name: Download final verification files
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: gradle-verification-final
           path: build/final-verification
