@@ -138,7 +138,7 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin "$BRANCH_NAME:refs/remotes/origin/$BRANCH_NAME" || true
+          git fetch origin "+$BRANCH_NAME:refs/remotes/origin/$BRANCH_NAME" || true
           if git rev-parse --verify --quiet "refs/remotes/origin/$BRANCH_NAME" >/dev/null &&
              git merge-base --is-ancestor HEAD "refs/remotes/origin/$BRANCH_NAME" &&
              git diff --quiet "refs/remotes/origin/$BRANCH_NAME" -- gradle/verification-metadata.xml gradle/verification-keyring.keys; then
@@ -151,7 +151,7 @@ jobs:
           git commit -m "Update Gradle dependency verification metadata"
           git push --force-with-lease origin "HEAD:$BRANCH_NAME"
 
-          if gh pr list --base master --head "${{ github.repository_owner }}:$BRANCH_NAME" --json number --jq '.[0].number' | grep -q .; then
+          if gh pr view "$BRANCH_NAME" --json number --jq .number >/dev/null 2>&1; then
             echo "Existing dependency verification PR found; branch was updated."
           else
             gh pr create \
