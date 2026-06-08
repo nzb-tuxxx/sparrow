@@ -117,6 +117,12 @@ jobs:
         run: |
           mkdir -p /tmp/dependency-verification/gradle
           cp build/final-verification/gradle/verification-* /tmp/dependency-verification/gradle/
+          if [ -f gradle/verification-keyring.keys ] &&
+             git diff --no-index --quiet --ignore-matching-lines='^uid    ' \
+               gradle/verification-keyring.keys \
+               /tmp/dependency-verification/gradle/verification-keyring.keys; then
+            cp gradle/verification-keyring.keys /tmp/dependency-verification/gradle/verification-keyring.keys
+          fi
           cp /tmp/dependency-verification/gradle/verification-* gradle/
 
           if [ -z "$(git status --porcelain -- gradle/verification-metadata.xml gradle/verification-keyring.keys)" ]; then
