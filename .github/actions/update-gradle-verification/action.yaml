@@ -65,19 +65,25 @@ runs:
         distribution: temurin
         java-version: '25.0.2'
 
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v6
+      with:
+        gradle-version: wrapper
+        cache-provider: basic
+
     - name: Generate dependency verification metadata
       shell: bash
       run: |
-        ./gradlew --write-verification-metadata sha512 --refresh-keys \
+        gradle --write-verification-metadata sha512 --refresh-keys \
           dependencies :drongo:dependencies :lark:dependencies jpackageImage
-        ./gradlew --write-verification-metadata pgp,sha512 --refresh-keys \
+        gradle --write-verification-metadata pgp,sha512 --refresh-keys \
           dependencies :drongo:dependencies :lark:dependencies jpackageImage
-        ./gradlew --export-keys help
+        gradle --export-keys help
 
     - name: Validate dependency verification metadata
       shell: bash
       run: |
-        ./gradlew help dependencies :drongo:dependencies :lark:dependencies \
+        gradle help dependencies :drongo:dependencies :lark:dependencies \
           --dependency-verification strict --refresh-keys
 
     - name: Stage verification files
