@@ -139,6 +139,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin "$BRANCH_NAME:refs/remotes/origin/$BRANCH_NAME" || true
+          if git rev-parse --verify --quiet "refs/remotes/origin/$BRANCH_NAME" >/dev/null &&
+             git merge-base --is-ancestor HEAD "refs/remotes/origin/$BRANCH_NAME" &&
+             git diff --quiet "refs/remotes/origin/$BRANCH_NAME" -- gradle/verification-metadata.xml gradle/verification-keyring.keys; then
+            echo "Existing automation branch already contains these verification changes."
+            exit 0
+          fi
           git checkout -B "$BRANCH_NAME"
 
           git add gradle/verification-metadata.xml gradle/verification-keyring.keys
