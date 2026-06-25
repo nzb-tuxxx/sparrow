@@ -8,9 +8,6 @@
          <key-server uri="https://keyserver.ubuntu.com"/>
          <key-server uri="https://keys.openpgp.org"/>
       </key-servers>
-      <ignored-keys>
-         <ignored-key id="94483BA5F4740C42" reason="Key couldn't be downloaded from any key server"/>
-      </ignored-keys>
       <trusted-keys>
          <trusted-key id="0A60B3F1FCB211175300EC206E50BB68CC1699A6" group="com.github.jai-imageio" name="jai-imageio-core" version="1.4.0"/>
          <trusted-key id="0CFA413799E2464C7D7E26220A4B343F2A55FDAE" group="com.h2database" name="h2" version="2.1.214"/>
